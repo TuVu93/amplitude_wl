@@ -37,24 +37,30 @@ amplitude.init(api_key, null, {
 /* End Set up Amplitude ~~*/
 	
 /*~~Sign Up - Log In Page*/
-var element = document.getElementsByClassName('auth0-lock-social-button');
-//console.log(element[1].dataset.provider);
-//FB
-element[0].addEventListener("click", function(){ 		
-		var properties = { Source : 'Facebook'};
-		//alert ("0");
-		amplitude.getInstance().logEvent('Sign Up', properties); });
-//Google
-element[1].addEventListener("click", function(){ 		
-		var properties = { Source : 'Google'};
-		//alert ("1");
-		amplitude.getInstance().logEvent('Sign Up', properties); });
-//Email
-var form = document.getElementsByClassName('auth0-lock-center');
-form[0].addEventListener("submit", function(){ 		
-		var properties = { Source : 'Email'};
-		//alert ("2");
-		amplitude.getInstance().logEvent('Sign Up', properties); });
+try {
+	var element = document.getElementsByClassName('auth0-lock-social-button');
+	//console.log(element[1].dataset.provider);
+	//FB
+	element[0].addEventListener("click", function(){ 		
+			var properties = { Source : 'Facebook'};
+			//alert ("0");
+			amplitude.getInstance().logEvent('Sign Up', properties); });
+	//Google
+	element[1].addEventListener("click", function(){ 		
+			var properties = { Source : 'Google'};
+			//alert ("1");
+			amplitude.getInstance().logEvent('Sign Up', properties); });
+	//Email
+	var form = document.getElementsByClassName('auth0-lock-center');
+	form[0].addEventListener("submit", function(){ 		
+			var properties = { Source : 'Email'};
+			//alert ("2");
+			amplitude.getInstance().logEvent('Sign Up', properties); });
+	}
+catch (e) {
+	
+}
+
 /*End Sign up - Log In ~~*/
 
 jQuery(document).ready(function( $ ) {
