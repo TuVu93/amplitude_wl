@@ -38,7 +38,7 @@ amplitude.init(api_key, null, {
 	
 /*~~Sign Up - Log In Page*/
 var element = document.getElementsByClassName('auth0-lock-social-button');
-console.log(element[1].dataset.provider);
+//console.log(element[1].dataset.provider);
 //FB
 element[0].addEventListener("click", function(){ 		
 		var properties = { Source : 'Facebook'};
@@ -62,17 +62,19 @@ jQuery(document).ready(function( $ ) {
 	//Sign up button
 	$(".menu-item-18").click(function(e) {
 		var properties = { Button : 'Sign up'};
-		//console.log ($(this).text() );
+		console.log ($(this).text() );
 		amplitude.getInstance().logEvent('Mainpage', properties);
 	});
 	//Log in button
 	$(".menu-item-22").click(function(e) {
 		var properties = { Button : 'Log in'};
+		console.log ($(this).text() );
 		amplitude.getInstance().logEvent('Mainpage', properties);
 	});
 	//Start earning interest today button
 	$(".button-section").click(function(e) {
 		var properties = { Button : 'Start earning interest today'};
+		console.log ($(this).text() );
 		amplitude.getInstance().logEvent('Mainpage', properties);
 	});
 /*End Main Page~~*/
