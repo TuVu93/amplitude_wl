@@ -22,7 +22,7 @@ for(var n=0;n<d.length;n++){t(d[n])}}v(n);n.getInstance=function(e){
 e=(!e||e.length===0?"$default_instance":e).toLowerCase()
 ;if(!n._iq.hasOwnProperty(e)){n._iq[e]={_q:[]};v(n._iq[e])}return n._iq[e]}
 ;e.amplitude=n})(window,document);
-var api_key = 'c8e1c50d7fe53e9c570ac9f7479fde6c';
+var api_key = '2570128c331a3afae6dbf3963ec9efff';
 amplitude.init(api_key, null, {
       saveEvents: true,
       includeReferrer: true,
@@ -58,9 +58,7 @@ try {
 			amplitude.getInstance().logEvent('Sign Up', properties); });
 	}
 catch (e) {
-	
 }
-
 /*End Sign up - Log In ~~*/
 
 jQuery(document).ready(function( $ ) {
