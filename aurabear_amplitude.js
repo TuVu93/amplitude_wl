@@ -92,7 +92,7 @@ jQuery(document).ready(function( $ ) {
 	//Invite friends button
 	$(".navbar .md-invite").click(function(e) {
 		var properties = { Button: $(this).text() };
-		amplitude.getInstance().logEvent('Deposit', properties);
+		amplitude.getInstance().logEvent('Invite', properties);
 	});
 /*End app.whalelend.com Page ~~*/
 
