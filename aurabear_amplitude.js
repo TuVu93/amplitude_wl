@@ -123,7 +123,6 @@ function init() {
 				if (view == '') {view = 'wallet';}
 				var properties = { Page: view + ' reviewed'};
 				amplitude.getInstance().logEvent('Deposit', properties);
-				}
 			}
 			//app.whalelend.com page
 			else {
