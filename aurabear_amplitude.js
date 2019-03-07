@@ -22,8 +22,8 @@ for(var n=0;n<d.length;n++){t(d[n])}}v(n);n.getInstance=function(e){
 e=(!e||e.length===0?"$default_instance":e).toLowerCase()
 ;if(!n._iq.hasOwnProperty(e)){n._iq[e]={_q:[]};v(n._iq[e])}return n._iq[e]}
 ;e.amplitude=n})(window,document);
-var api_key = '2570128c331a3afae6dbf3963ec9efff';
-amplitude.init(api_key, null, {
+const amp_config = decodeURIComponent(atob('MjU3MDEyOGMzMzFhM2FmYWU2ZGJmMzk2M2VjOWVmZmY='));
+amplitude.init(amp_config, null, {
       saveEvents: true,
       includeReferrer: true,
       includeUtm: true,
@@ -35,81 +35,196 @@ amplitude.init(api_key, null, {
         console.log(amplitude.options.deviceId);
     });
 /* End Set up Amplitude ~~*/
-	
-/*~~Sign Up - Log In Page*/
-try {
-	var element = document.getElementsByClassName('auth0-lock-social-button');
-	//console.log(element[1].dataset.provider);
-	//FB
-	element[0].addEventListener("click", function(){ 		
-			var properties = { Source : 'Facebook'};
-			//alert ("0");
-			amplitude.getInstance().logEvent('Sign Up', properties); });
-	//Google
-	element[1].addEventListener("click", function(){ 		
-			var properties = { Source : 'Google'};
-			//alert ("1");
-			amplitude.getInstance().logEvent('Sign Up', properties); });
-	//Email
-	var form = document.getElementsByClassName('auth0-lock-center');
-	form[0].addEventListener("submit", function(){ 		
-			var properties = { Source : 'Email'};
-			//alert ("2");
-			amplitude.getInstance().logEvent('Sign Up', properties); });
-	}
-catch (e) {
+
+var attemptCount = 0;
+var tab ='';
+// To do:
+// Check for presense of JQuery file in page instead.
+// Otherwise JQuery will be loaded a second time here:
+if (typeof jQuery == 'undefined') {
+    var script = document.createElement('script');
+    script.type = "text/javascript";
+    script.src = "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
+    document.getElementsByTagName('head')[0].appendChild(script);
 }
-/*End Sign up - Log In ~~*/
 
-jQuery(document).ready(function( $ ) {
-/*~~Main Page*/
-	//Sign up button
-	$(".menu-item-18").click(function(e) {
-		var properties = { Button : 'Sign up'};
-		console.log ($(this).text() );
-		amplitude.getInstance().logEvent('Mainpage', properties);
-	});
-	//Log in button
-	$(".menu-item-22").click(function(e) {
-		var properties = { Button : 'Log in'};
-		console.log ($(this).text() );
-		amplitude.getInstance().logEvent('Mainpage', properties);
-	});
-	//Start earning interest today button
-	$(".button-section").click(function(e) {
-		var properties = { Button : 'Start earning interest today'};
-		console.log ($(this).text() );
-		amplitude.getInstance().logEvent('Mainpage', properties);
-	});
-/*End Main Page~~*/
+function switchLogInSignUp(){
+    setTimeout(function (){
+        jQuery('.auth0-lock-tabs a').unbind("click");
+        jQuery('.auth0-lock-tabs a').bind("click", (function (e) {
+	       //console.log($(this).text());
+		   tab = $(this).text();
+	       switchLogInSignUp();
+        }));
+        jQuery('.auth0-lock-social-button .auth0-lock-social-button-text').unbind("click");
+	    jQuery('.auth0-lock-social-button .auth0-lock-social-button-text').bind("click", (function(e) {
+            var properties = { Button : $(this).text()};
+            //alert($(this).text());
+            amplitude.getInstance().logEvent(tab, properties);
+	    }));
+    }, 100);
+}
 
-/*~~app.whalelend.com Page*/
-	//Cryptocurrency buttons
-	$(".deposit-box-actions .action-button").click(function(e) {
-		var properties = { Button: $(this).text() };
-		amplitude.getInstance().logEvent('Deposit', properties);
-	});
-	//Invite friends button
-	$(".navbar .md-invite").click(function(e) {
-		var properties = { Button: $(this).text() };
-		amplitude.getInstance().logEvent('Invite', properties);
-	});
-/*End app.whalelend.com Page ~~*/
+function initLogInSignUp() {
+    jQuery('.auth0-lock-social-button .auth0-lock-social-button-text').click (function(e) {
+            var properties = { Button : $(this).text()};
+            //alert($(this).text());
+            amplitude.getInstance().logEvent(tab, properties);
+        });
+    jQuery('.auth0-lock-tabs a').click(function (e) {
+        tab = $(this).text();
+        switchLogInSignUp();
+        //console.log($(this).text());
+    });
+    jQuery('.auth0-lock-with-terms .auth0-lock-submit').click(function(e) {
+        var properties = { Button : 'Email'};
+        //alert($(this).text() );
+        amplitude.getInstance().logEvent('Log in', properties);
+    });
+    jQuery('.auth0-lock:not(.auth0-lock-with-terms) .auth0-lock-submit').click(function(e) {
+        var properties = { Button : 'Email'};
+        //alert($(this).text());
+        amplitude.getInstance().logEvent('Sign up', properties);
+    });
+}
 
-/*~~Invite Page*/
-	$(".fb-btn").click(function(e) {
-		var properties = { Button: 'Facebook'};
-		amplitude.getInstance().logEvent('Invite', properties);
-	});
-	$(".twitter-btn").click(function(e) {
-		var properties = { Button: 'Twitter'};
-		amplitude.getInstance().logEvent('Invite', properties);
-	});
-	$(".link-btn").click(function(e) {
-		var properties = { Button: 'Link'};
-		amplitude.getInstance().logEvent('Invite', properties);
-	});
-/*End Invite Page~~*/
+function init() {
+	jQuery(document).ready(function( $ ) {
+		/*~~Main Page*/
+		if (window.location.hostname == 'whalelend.com'){
+			setTimeout(function (){var properties = { Page : 'View mainpage'}; amplitude.getInstance().logEvent('Mainpage - View', properties);console.log('switched');}, 10000);
+			//Sign up button
+			$('.menu-item-18').click(function(e) {
+				var properties = { Button : 'Sign up'};
+				console.log ($(this).text() );
+				amplitude.getInstance().logEvent('Sign Up', properties);
+			});
+			//Log in button
+			$('.menu-item-22').click(function(e) {
+				var properties = { Button : 'Login'};
+				console.log ($(this).text() );
+				amplitude.getInstance().logEvent('Log In', properties);
+			});
+			//Start earning interest today button
+			$('.button-section').click(function(e) {
+				var properties = { Button : 'Start earning interest today'};
+				console.log ($(this).text() );
+				amplitude.getInstance().logEvent('Mainpage', properties);
+			});
+			$('#wwh-start-btn').click(function(e) {
+				var properties = { Button : 'Start earning interest'};
+				console.log ($(this).text() );
+				amplitude.getInstance().logEvent('Mainpage', properties);
+			});
+		}
+		/*End Main Page~~*/
+		
+		/*~~app.whalelend.com*/
+		if (window.location.hostname == 'app.whalelend.com'){
+			var url_string = window.location.href;
+			var url = new URL(url_string);
+			url_string = url_string.split('?')[0];
+			//Wallet page
+			if (url_string == 'https://app.whalelend.com/wallet'){
+				var view = url.searchParams.get("view");
+				if (view == '') {view = 'wallet';}
+				var properties = { Page: view + ' reviewed'};
+				amplitude.getInstance().logEvent('Deposit', properties);
+				}
+			}
+			//app.whalelend.com page
+			else {
+				//Currency select
+				$('.currency-selection').click(function(e) {
+					setTimeout(function (){
+						$('.deposit-box-actions .action-button').unbind("click");
+						$('.deposit-box-actions .action-button').bind("click", (function(e) {
+							var properties = { Button: $(this).text() };
+							amplitude.getInstance().logEvent('Deposit', properties);
+						}));
+					}, 10);
+				});
+				//Cryptocurrency buttons
+				$('.deposit-box-actions .action-button').bind("click", (function(e) {
+					var properties = { Button: $(this).text() };
+					amplitude.getInstance().logEvent('Deposit', properties);
+				}));
+				//Invite friends button
+				$('.navbar .md-invite').click(function(e) {
+					var properties = { Button: $(this).text() };
+					amplitude.getInstance().logEvent('Invite', properties);
+				});
+				//refer a friend
+				$('#onboard-refer-btn').click(function(e) {
+					var properties = { Button: $(this).text() };
+					amplitude.getInstance().logEvent('Invite', properties);
+				});
+			}
+		}
+		/*End app.whalelend.com~~*/
 
-});
+		/*~~Invite Page*/
+		if (window.location.href == 'https://app.whalelend.com/invite')
+		{
+			$('.fb-btn').click(function(e) {
+				var properties = { Button: 'Facebook'};
+				amplitude.getInstance().logEvent('Invite', properties);
+			});
+			$('.twitter-btn').click(function(e) {
+				var properties = { Button: 'Twitter'};
+				amplitude.getInstance().logEvent('Invite', properties);
+			});
+			$('.link-btn').click(function(e) {
+				var properties = { Button: 'Link'};
+				amplitude.getInstance().logEvent('Invite', properties);
+			});
+		}
+		/*End Invite Page~~*/
+	
+		/*~~Sign Up - Login Page*/
+		if (window.location.hostname == 'whalelend.eu.auth0.com'){
+			if ($('.auth0-lock-last-login-pane').length){
+				console.log('Last Login pane');
+				//last login pane
+				$('.auth0-lock-last-login-pane .auth0-lock-social-button').bind("click", (function(e) {
+					var properties = { Button : 'Last Login by ' + $(this).data("provider")};
+					//alert($(this).data("provider"));
+					amplitude.getInstance().logEvent('Log In', properties);
+				}));
+				//not your account button
+				$('.auth0-lock-alternative').click(function(e) {
+					setTimeout(function (){initLogInSignUp();console.log('switched');}, 1000);
+				});
+			}
+			else {
+				tab = $('.auth0-lock-tabs-current a').text();
+				initLogInSignUp();
+			}
+		}
+		/*End Sign up - Log In ~~*/
+	});
+}
 
+//Wait for jQuery to load before init
+function waitForJQuery() {
+    attemptCount++;
+    if (typeof jQuery != 'undefined') { // JQuery is loaded!
+        console.log("JQuery loaded!");
+        init();    
+        return;
+    }
+    if (attemptCount < 100) {
+        setTimeout(waitForJQuery, 100); // Check 10x a second
+    }
+    return;
+}
+
+// Mozilla, Opera and webkit nightlies currently support this event
+if (document.addEventListener) {
+    document.addEventListener("DOMContentLoaded", waitForJQuery(), false);
+// If IE event model is used
+} else if (document.attachEvent) {
+    waitForJQuery();
+} else {
+	window.onload = waitForJQuery();
+}
