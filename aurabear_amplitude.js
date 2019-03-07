@@ -59,31 +59,27 @@ function switchLogInSignUp(){
         jQuery('.auth0-lock-social-button .auth0-lock-social-button-text').unbind("click");
 	    jQuery('.auth0-lock-social-button .auth0-lock-social-button-text').bind("click", (function(e) {
             var properties = { Button : $(this).text()};
-            //alert($(this).text());
             amplitude.getInstance().logEvent(tab, properties);
 	    }));
     }, 100);
 }
 
+//Login - Sign up Page ~~ rebind buttons if switch tab
 function initLogInSignUp() {
     jQuery('.auth0-lock-social-button .auth0-lock-social-button-text').click (function(e) {
             var properties = { Button : $(this).text()};
-            //alert($(this).text());
             amplitude.getInstance().logEvent(tab, properties);
         });
     jQuery('.auth0-lock-tabs a').click(function (e) {
         tab = $(this).text();
         switchLogInSignUp();
-        //console.log($(this).text());
     });
     jQuery('.auth0-lock-with-terms .auth0-lock-submit').click(function(e) {
         var properties = { Button : 'Email'};
-        //alert($(this).text() );
         amplitude.getInstance().logEvent('Log in', properties);
     });
     jQuery('.auth0-lock:not(.auth0-lock-with-terms) .auth0-lock-submit').click(function(e) {
         var properties = { Button : 'Email'};
-        //alert($(this).text());
         amplitude.getInstance().logEvent('Sign up', properties);
     });
 }
@@ -96,24 +92,21 @@ function init() {
 			//Sign up button
 			$('.menu-item-18').click(function(e) {
 				var properties = { Button : 'Sign up'};
-				console.log ($(this).text() );
 				amplitude.getInstance().logEvent('Sign Up', properties);
 			});
 			//Log in button
 			$('.menu-item-22').click(function(e) {
 				var properties = { Button : 'Login'};
-				console.log ($(this).text() );
 				amplitude.getInstance().logEvent('Log In', properties);
 			});
 			//Start earning interest today button
 			$('.button-section').click(function(e) {
 				var properties = { Button : 'Start earning interest today'};
-				console.log ($(this).text() );
 				amplitude.getInstance().logEvent('Mainpage', properties);
 			});
+			//Start earning interest button
 			$('#wwh-start-btn').click(function(e) {
 				var properties = { Button : 'Start earning interest'};
-				console.log ($(this).text() );
 				amplitude.getInstance().logEvent('Mainpage', properties);
 			});
 		}
@@ -188,7 +181,6 @@ function init() {
 				//last login pane
 				$('.auth0-lock-last-login-pane .auth0-lock-social-button').bind("click", (function(e) {
 					var properties = { Button : 'Last Login by ' + $(this).data("provider")};
-					//alert($(this).data("provider"));
 					amplitude.getInstance().logEvent('Log In', properties);
 				}));
 				//not your account button
