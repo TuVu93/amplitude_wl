@@ -85,7 +85,10 @@ function initLogInSignUp() {
 }
 
 function init() {
-	jQuery(document).ready(function( $ ) {
+	//jQuery(document).ready(function( $ ) {
+	window.addEventListener('load', function(){
+		// Everything has loaded!
+		console.log('Amplitude is loaded!');
 		/*~~Main Page*/
 		if (window.location.hostname == 'whalelend.com'){
 			setTimeout(function (){var properties = { Page : 'View mainpage'}; amplitude.getInstance().logEvent('Mainpage - View', properties);console.log('switched');}, 10000);
