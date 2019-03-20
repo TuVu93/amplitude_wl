@@ -52,13 +52,14 @@ function switchLogInSignUp(){
     setTimeout(function (){
         jQuery('.auth0-lock-tabs a').unbind("click");
         jQuery('.auth0-lock-tabs a').bind("click", (function (e) {
-	       //console.log($(this).text());
+	       console.log($(this).text());
 		   tab = $(this).text();
 	       switchLogInSignUp();
         }));
         jQuery('.auth0-lock-social-button .auth0-lock-social-button-text').unbind("click");
 	    jQuery('.auth0-lock-social-button .auth0-lock-social-button-text').bind("click", (function(e) {
             var properties = { Button : $(this).text()};
+			console.log($(this).text());
             amplitude.getInstance().logEvent(tab, properties);
 	    }));
     }, 100);
@@ -91,7 +92,7 @@ function init() {
 		console.log('Amplitude is loaded!');
 		/*~~Main Page*/
 		if (window.location.hostname == 'whalelend.com'){
-			setTimeout(function (){var properties = { Page : 'View mainpage'}; amplitude.getInstance().logEvent('Mainpage - View', properties);console.log('switched');}, 10000);
+			var properties = { Page : 'View mainpage'}; amplitude.getInstance().logEvent('Mainpage - View', properties);
 			//Sign up button
 			$('.menu-item-18').click(function(e) {
 				var properties = { Button : 'Sign up'};
