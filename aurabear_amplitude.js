@@ -37,7 +37,6 @@ amplitude.init(amp_config, null, {
 /* End Set up Amplitude ~~*/
 
 var attemptCount = 0;
-var tab ='';
 // To do:
 // Check for presense of JQuery file in page instead.
 // Otherwise JQuery will be loaded a second time here:
@@ -48,7 +47,7 @@ if (typeof jQuery == 'undefined') {
     document.getElementsByTagName('head')[0].appendChild(script);
 }
 
-function switchLogInSignUp(){
+/*function switchLogInSignUp(){
     setTimeout(function (){
         jQuery('.auth0-lock-tabs a').unbind("click");
         jQuery('.auth0-lock-tabs a').bind("click", (function (e) {
@@ -63,138 +62,172 @@ function switchLogInSignUp(){
             amplitude.getInstance().logEvent(tab, properties);
 	    }));
     }, 100);
+}*/
+
+function initMainpage() {
+	//Auto send when open mainpage
+	var properties = { Page : 'View mainpage'}; amplitude.getInstance().logEvent('Mainpage - View', properties);
+	//Sign up button
+	jQuery(document).on('click','.menu-item-18',function(){
+		var properties = { Button : 'Sign up'};
+		amplitude.getInstance().logEvent('Sign Up', properties);
+	});
+	//Log in button
+	jQuery(document).on('click','.menu-item-22',function(){
+		var properties = { Button : 'Login'};
+		amplitude.getInstance().logEvent('Log In', properties);
+	});
+	//Start earning interest today button
+	jQuery(document).on('click','.button-section',function(){
+		var properties = { Button : 'Start earning interest today'};
+		amplitude.getInstance().logEvent('Mainpage', properties);
+	});
+	//Start earning interest button
+	jQuery(document).on('click','#wwh-start-btn',function(){
+		var properties = { Button : 'Start earning interest'};
+		amplitude.getInstance().logEvent('Mainpage', properties);
+	});
 }
 
 //Login - Sign up Page ~~ rebind buttons if switch tab
 function initLogInSignUp() {
-    jQuery('.auth0-lock-social-button .auth0-lock-social-button-text').click (function(e) {
-            var properties = { Button : $(this).text()};
-            amplitude.getInstance().logEvent(tab, properties);
+	//last login pane
+	jQuery(document).on('click','.auth0-lock-last-login-pane .auth0-lock-social-button',function(){
+		var properties = { Button : 'Last Login by ' + $(this).data("provider")};
+		amplitude.getInstance().logEvent('Log In', properties);
+	});
+	//not your account button
+	jQuery(document).on('click','.auth0-lock-alternative',function(){
+		setTimeout(function (){initLogInSignUp();}, 1000);
+	});
+	//google, facebook button
+	jQuery(document).on('click','.auth0-lock-social-button .auth0-lock-social-button-text',function(){
+		var tab = $('.auth0-lock-tabs-current a').text();
+		var properties = { Button : $(this).text()};
+		amplitude.getInstance().logEvent(tab, properties);
         });
-    jQuery('.auth0-lock-tabs a').click(function (e) {
-        tab = $(this).text();
-        switchLogInSignUp();
+	//SignUp button
+	jQuery(document).on('click','.auth0-lock-with-terms .auth0-lock-submit',function(){
+        var properties = { Button : 'Sign up with Email'};
+        amplitude.getInstance().logEvent('Sign Up', properties);
     });
-    jQuery('.auth0-lock-with-terms .auth0-lock-submit').click(function(e) {
-        var properties = { Button : 'Email'};
-        amplitude.getInstance().logEvent('Log in', properties);
-    });
-    jQuery('.auth0-lock:not(.auth0-lock-with-terms) .auth0-lock-submit').click(function(e) {
-        var properties = { Button : 'Email'};
-        amplitude.getInstance().logEvent('Sign up', properties);
+	//LogIn button
+	jQuery(document).on('click','.auth0-lock:not(.auth0-lock-with-terms) .auth0-lock-submit',function(){
+        var properties = { Button : 'Log in with Email'};
+        amplitude.getInstance().logEvent('Log In', properties);
     });
 }
 
+function initWalletPage() {
+	//Detect which tab in wallet page
+	var url = new URL(window.location.href);
+	var view = url.searchParams.get("view");
+	if (view == null) {view = 'deposits';}
+	var properties = { Page: view + ' viewed'};
+	console.log(properties);
+	amplitude.getInstance().logEvent('Deposit', properties);
+}
+
+function initFirstDepositPage() {
+	//Cryptocurrency buttons
+	jQuery(document).on('click', '.deposit-box-actions .action-button', function() {
+		var properties = { Button: $(this).text() };
+		console.log(properties);
+		amplitude.getInstance().logEvent('Deposit', properties);
+	});
+	//Invite friends button
+	jQuery(document).on('click', '.navbar .md-invite', function() {
+		var properties = { Button: $(this).text() };
+		amplitude.getInstance().logEvent('Invite', properties);
+	});
+	//refer a friend
+	jQuery(document).on('click', '#onboard-refer-btn', function() {
+		var properties = { Button: $(this).text() };
+		amplitude.getInstance().logEvent('Invite', properties);
+	});
+}
+
+function initInvitePage(){
+	//fb button
+	jQuery(document).on('click','.fb-btn',function(){
+		var properties = { Button: 'Facebook'};
+		console.log(properties);
+		amplitude.getInstance().logEvent('Invite', properties);
+	});
+	//twitter button
+	jQuery(document).on('click','.twitter-btn',function(){
+		var properties = { Button: 'Twitter'};
+		console.log(properties);
+		amplitude.getInstance().logEvent('Invite', properties);
+	});
+	//link button
+	jQuery(document).on('click','.link-btn',function(){
+		var properties = { Button: 'Link'};
+		console.log(properties);
+		amplitude.getInstance().logEvent('Invite', properties);
+	});
+}
+
+//check for URL change in wallet page
+function detectURLChanged(){
+	history.pushState = ( f => function pushState(){
+    var ret = f.apply(this, arguments);
+    window.dispatchEvent(new Event('pushState'));
+    window.dispatchEvent(new Event('locationchange'));
+    return ret;
+	})(history.pushState);
+
+	history.replaceState = ( f => function replaceState(){
+		var ret = f.apply(this, arguments);
+		window.dispatchEvent(new Event('replaceState'));
+		window.dispatchEvent(new Event('locationchange'));
+		return ret;
+	})(history.replaceState);
+
+	window.addEventListener('popstate',()=>{
+		window.dispatchEvent(new Event('locationchange'))
+	});
+}
+
 function init() {
-	//jQuery(document).ready(function( $ ) {
-	window.addEventListener('load', function(){
+	jQuery(document).ready(function() {
 		// Everything has loaded!
 		console.log('Amplitude is loaded!');
+		
 		/*~~Main Page*/
-		if (window.location.hostname == 'whalelend.com'){
-			var properties = { Page : 'View mainpage'}; amplitude.getInstance().logEvent('Mainpage - View', properties);
-			//Sign up button
-			$('.menu-item-18').click(function(e) {
-				var properties = { Button : 'Sign up'};
-				amplitude.getInstance().logEvent('Sign Up', properties);
-			});
-			//Log in button
-			$('.menu-item-22').click(function(e) {
-				var properties = { Button : 'Login'};
-				amplitude.getInstance().logEvent('Log In', properties);
-			});
-			//Start earning interest today button
-			$('.button-section').click(function(e) {
-				var properties = { Button : 'Start earning interest today'};
-				amplitude.getInstance().logEvent('Mainpage', properties);
-			});
-			//Start earning interest button
-			$('#wwh-start-btn').click(function(e) {
-				var properties = { Button : 'Start earning interest'};
-				amplitude.getInstance().logEvent('Mainpage', properties);
-			});
+		if (window.location.href == 'https://whalelend.com/'){
+			initMainpage();
 		}
 		/*End Main Page~~*/
 		
 		/*~~app.whalelend.com*/
 		if (window.location.hostname == 'app.whalelend.com'){
+			detectURLChanged();
 			var url_string = window.location.href;
-			var url = new URL(url_string);
-			url_string = url_string.split('?')[0];
+			//first time deposit page
+			if (url_string == 'https://app.whalelend.com/'){initFirstDepositPage();}
 			//Wallet page
-			if (url_string == 'https://app.whalelend.com/wallet'){
-				var view = url.searchParams.get("view");
-				if (view == '') {view = 'wallet';}
-				var properties = { Page: view + ' reviewed'};
-				amplitude.getInstance().logEvent('Deposit', properties);
-			}
-			//app.whalelend.com page
 			else {
-				//Currency select
-				$('.currency-selection').click(function(e) {
-					setTimeout(function (){
-						$('.deposit-box-actions .action-button').unbind("click");
-						$('.deposit-box-actions .action-button').bind("click", (function(e) {
-							var properties = { Button: $(this).text() };
-							amplitude.getInstance().logEvent('Deposit', properties);
-						}));
-					}, 10);
-				});
-				//Cryptocurrency buttons
-				$('.deposit-box-actions .action-button').bind("click", (function(e) {
-					var properties = { Button: $(this).text() };
-					amplitude.getInstance().logEvent('Deposit', properties);
-				}));
-				//Invite friends button
-				$('.navbar .md-invite').click(function(e) {
-					var properties = { Button: $(this).text() };
-					amplitude.getInstance().logEvent('Invite', properties);
-				});
-				//refer a friend
-				$('#onboard-refer-btn').click(function(e) {
-					var properties = { Button: $(this).text() };
-					amplitude.getInstance().logEvent('Invite', properties);
-				});
+				url_string = url_string.split('?')[0];
+				if (url_string == 'https://app.whalelend.com/wallets'){initWalletPage();}
 			}
+			//add URL change event listerner for wallet page
+			window.addEventListener('locationchange', function(){
+				url_string = window.location.href;
+				url_string = url_string.split('?')[0];
+				if (url_string == 'https://app.whalelend.com/wallets'){initWalletPage();}
+				if (window.location.href == 'https://app.whalelend.com/invite'){initInvitePage();}
+			});
 		}
 		/*End app.whalelend.com~~*/
 
 		/*~~Invite Page*/
-		if (window.location.href == 'https://app.whalelend.com/invite')
-		{
-			$('.fb-btn').click(function(e) {
-				var properties = { Button: 'Facebook'};
-				amplitude.getInstance().logEvent('Invite', properties);
-			});
-			$('.twitter-btn').click(function(e) {
-				var properties = { Button: 'Twitter'};
-				amplitude.getInstance().logEvent('Invite', properties);
-			});
-			$('.link-btn').click(function(e) {
-				var properties = { Button: 'Link'};
-				amplitude.getInstance().logEvent('Invite', properties);
-			});
-		}
+		if (window.location.href == 'https://app.whalelend.com/invite'){initInvitePage();}
 		/*End Invite Page~~*/
 	
 		/*~~Sign Up - Login Page*/
 		if (window.location.hostname == 'whalelend.eu.auth0.com'){
-			if ($('.auth0-lock-last-login-pane').length){
-				console.log('Last Login pane');
-				//last login pane
-				$('.auth0-lock-last-login-pane .auth0-lock-social-button').bind("click", (function(e) {
-					var properties = { Button : 'Last Login by ' + $(this).data("provider")};
-					amplitude.getInstance().logEvent('Log In', properties);
-				}));
-				//not your account button
-				$('.auth0-lock-alternative').click(function(e) {
-					setTimeout(function (){initLogInSignUp();console.log('switched');}, 1000);
-				});
-			}
-			else {
-				tab = $('.auth0-lock-tabs-current a').text();
-				initLogInSignUp();
-			}
+			initLogInSignUp();
 		}
 		/*End Sign up - Log In ~~*/
 	});
